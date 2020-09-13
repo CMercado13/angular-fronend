@@ -1,7 +1,7 @@
 import { Paciente } from './../../../_model/paciente';
 import { PacienteService } from './../../../_service/paciente.service';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
@@ -24,8 +24,8 @@ export class PacienteEdicionComponent implements OnInit {
   ngOnInit(): void {
     this.form = new FormGroup({
       'id': new FormControl(0),
-      'nombres': new FormControl(''),
-      'apellidos': new FormControl(''),
+      'nombres': new FormControl('', [Validators.required, Validators.minLength(3)]),
+      'apellidos': new FormControl('', Validators.required),
       'dni': new FormControl(''),
       'telefono': new FormControl(''),
       'direccion': new FormControl('')
@@ -38,6 +38,8 @@ export class PacienteEdicionComponent implements OnInit {
     });
 
   }
+
+  get f() { return this.form.controls; }
 
   initForm() {
     //EDITAR, por lo tanto carga la data a editar
@@ -56,6 +58,9 @@ export class PacienteEdicionComponent implements OnInit {
   }
 
   operar() {
+
+    if (this.form.invalid) { return; }
+
     let paciente = new Paciente();
     paciente.idPaciente = this.form.value['id'];
     paciente.nombres = this.form.value['nombres'];

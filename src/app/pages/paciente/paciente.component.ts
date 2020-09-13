@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class PacienteComponent implements OnInit {
 
+  cantidad: number = 0;
   displayedColumns = ['idPaciente', 'nombres', 'apellidos', 'acciones'];
   dataSource: MatTableDataSource<Paciente>;
   @ViewChild(MatSort) sort: MatSort;
@@ -37,12 +38,18 @@ export class PacienteComponent implements OnInit {
       });
     })
 
+    this.pacienteService.listarPageable(0, 10).subscribe(data => {
+      this.cantidad = data.totalElements;
+      this.dataSource = new MatTableDataSource(data.content);
+      this.dataSource.sort = this.sort;
+      //this.dataSource.paginator = this.paginator;
+    });
     //Apenas carga la página
-    this.pacienteService.listar().subscribe(data => {
+    /*this.pacienteService.listar().subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
-    });
+    });*/
   }
 
   filtrar(valor: string) {
@@ -55,6 +62,14 @@ export class PacienteComponent implements OnInit {
         this.pacienteService.pacienteCambio.next(data);
         this.pacienteService.mensajeCambio.next('SE ELIMINÓ');
       });
+    });
+  }
+
+  mostrarMas(e: any) {
+    this.pacienteService.listarPageable(e.pageIndex, e.pageSize).subscribe(data => {
+      this.cantidad = data.totalElements;
+      this.dataSource = new MatTableDataSource(data.content);
+      this.dataSource.sort = this.sort;
     });
   }
 }
